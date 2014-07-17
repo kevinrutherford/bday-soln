@@ -1,3 +1,5 @@
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -6,11 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class AcceptanceTest {
 
@@ -18,18 +18,19 @@ public class AcceptanceTest {
 	private static final int SMTP_PORT = 25;
 	private List<Message> messagesSent;
 	private BirthdayService service;
+	private Emailer emailer;
 	
 	@Before
 	public void setUp() throws Exception {
 		createDataFile();
 		messagesSent = new ArrayList<Message>();
 
-		service = new BirthdayService() {			
-			@Override
+		emailer = new Emailer("localhost", SMTP_PORT) {
 			protected void sendMessage(Message msg) {
 				messagesSent.add(msg);
 			}
 		};
+		service = new BirthdayService();
 	}
 	
 	private void createDataFile() throws FileNotFoundException, UnsupportedEncodingException {
@@ -44,7 +45,7 @@ public class AcceptanceTest {
 
 	@Test
 	public void sendsMessageForBirthdays() throws Exception {
-		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/10/08"), "localhost", SMTP_PORT);
+		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/10/08"), emailer);
 		
 		assertEquals("message not sent?", 1, messagesSent.size());
 		Message message = messagesSent.get(0);
@@ -55,8 +56,8 @@ public class AcceptanceTest {
 	}
 	
 	@Test
-	public void willNotSendEmailsWhenNobodysBirthday() {		
-		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/01/01"), "localhost", SMTP_PORT);
+	public void willNotSendEmailsWhenNobodysBirthday() {
+		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/01/01"), emailer);
 		assertEquals("what? messages?", 0, messagesSent.size());
 	}
 
