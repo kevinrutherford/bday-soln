@@ -1,9 +1,5 @@
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +18,7 @@ public class AcceptanceTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		createDataFile();
+		new TestDataFile().create(EMPLOYEE_DATA_FILE);
 		messagesSent = new ArrayList<Message>();
 
 		emailer = new Emailer("localhost", SMTP_PORT) {
@@ -31,16 +27,6 @@ public class AcceptanceTest {
 			}
 		};
 		service = new BirthdayService();
-	}
-	
-	private void createDataFile() throws FileNotFoundException, UnsupportedEncodingException {
-		File f = new File(EMPLOYEE_DATA_FILE);
-		if (f.canRead()) return;
-		PrintWriter writer = new PrintWriter(f, "UTF-8");
-		writer.println("last_name, first_name, date_of_birth, email, anniversary");
-		writer.println("Doe, John, 1982/10/08, john.doe@foobar.com, 2009/07/01");
-		writer.println("Ann, Mary, 1975/03/11, mary.ann@foobar.com, 2009/08/01");
-		writer.close();
 	}
 
 	@Test
