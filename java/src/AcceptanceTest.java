@@ -55,7 +55,7 @@ public class AcceptanceTest {
 	}
 	
 	@Test
-	public void willNotSendEmailsWhenNobodysBirthday() throws Exception {		
+	public void willNotSendEmailsWhenNobodysBirthday() {		
 		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/01/01"), "localhost", SMTP_PORT);
 		assertEquals("what? messages?", 0, messagesSent.size());
 	}
