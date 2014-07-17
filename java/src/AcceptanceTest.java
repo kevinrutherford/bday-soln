@@ -14,25 +14,21 @@ public class AcceptanceTest {
 	private static final int SMTP_PORT = 25;
 	private List<Message> messagesSent;
 	private BirthdayService service;
-	private Emailer emailer;
 	
 	@Before
 	public void setUp() throws Exception {
 		new TestDataFile().create(EMPLOYEE_DATA_FILE);
+		EmployeeFile employeeFile = new EmployeeFile(EMPLOYEE_DATA_FILE);
 		messagesSent = new ArrayList<Message>();
-
-		emailer = new Emailer("localhost", SMTP_PORT) {
-			protected void sendMessage(Message msg) {
-				messagesSent.add(msg);
-			}
+		Emailer emailer = new Emailer("localhost", SMTP_PORT) {
+			protected void sendMessage(Message msg) { messagesSent.add(msg); }
 		};
-		service = new BirthdayService();
+		service = new BirthdayService(emailer, employeeFile);
 	}
 
 	@Test
 	public void sendsMessageForBirthdays() throws Exception {
-		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/10/08"), emailer);
-		
+		service.sendGreetings(new OurDate("2008/10/08"));
 		assertEquals("message not sent?", 1, messagesSent.size());
 		Message message = messagesSent.get(0);
 		assertEquals("Happy Birthday, dear John!", message.getContent());
@@ -43,8 +39,7 @@ public class AcceptanceTest {
 	
 	@Test
 	public void willNotSendEmailsWhenNobodysBirthday() {
-		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/01/01"), emailer);
+		service.sendGreetings(new OurDate("2008/01/01"));
 		assertEquals("what? messages?", 0, messagesSent.size());
 	}
-
 }

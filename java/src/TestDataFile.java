@@ -3,7 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-
 public class TestDataFile {
 	
 	public void create(String path) throws FileNotFoundException, UnsupportedEncodingException {
