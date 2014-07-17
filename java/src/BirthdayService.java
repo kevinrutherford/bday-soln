@@ -14,6 +14,7 @@ public class BirthdayService {
 	}
 
 	public void sendGreetings(OurDate ourDate) {
+		Greeter sendGreetings = new Greeter(messageSender, ourDate);
 		BufferedReader in;
 		try {
 			in = new BufferedReader(new FileReader(personnel.fileName));
@@ -22,19 +23,10 @@ public class BirthdayService {
 			while ((str = in.readLine()) != null) {
 				String[] employeeData = str.split(", ");
 				Employee employee = new Employee(employeeData[1], employeeData[0], employeeData[2], employeeData[3]);
-				greet(ourDate, employee);
+				sendGreetings.greet(ourDate, employee);
 			}
 		} catch (IOException e) {
 			throw new PersonnelException(e);
-		}
-	}
-
-	private void greet(OurDate ourDate, Employee employee) {
-		String recipient = employee.getEmail();
-		if (employee.isBirthday(ourDate)) {
-			String body = "Happy Birthday, dear %NAME%!".replace("%NAME%", employee.getFirstName());
-			String subject = "Happy Birthday!";
-			messageSender.sendMessage("sender@here.com", subject, body, recipient);
 		}
 	}
 }
