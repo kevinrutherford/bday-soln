@@ -7,13 +7,12 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class BirthdayService {
 
-	public void sendGreetings(String fileName, OurDate ourDate, String smtpHost, int smtpPort) throws IOException, AddressException, MessagingException {
+	public void sendGreetings(String fileName, OurDate ourDate, String smtpHost, int smtpPort) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(fileName));
 		String str = "";
 		str = in.readLine(); // skip header
@@ -29,7 +28,7 @@ public class BirthdayService {
 		}
 	}
 
-	private void sendMessage(String smtpHost, int smtpPort, String sender, String subject, String body, String recipient) throws AddressException, MessagingException {
+	private void sendMessage(String smtpHost, int smtpPort, String sender, String subject, String body, String recipient) {
 		// Create a mail session
 		java.util.Properties props = new java.util.Properties();
 		props.put("mail.smtp.host", smtpHost);
@@ -38,18 +37,24 @@ public class BirthdayService {
 
 		// Construct the message
 		Message msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress(sender));
-		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-		msg.setSubject(subject);
-		msg.setText(body);
-
-		// Send the message
+		try {
+			msg.setFrom(new InternetAddress(sender));
+			msg.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+			msg.setSubject(subject);
+			msg.setText(body);
+		} catch (MessagingException e) {
+			throw new MessageSenderException(e);
+		}
 		sendMessage(msg);
 	}
 
 	// made protected for testing :-(
-	protected void sendMessage(Message msg) throws MessagingException {
-		Transport.send(msg);
+	protected void sendMessage(Message msg) {
+		try {
+			Transport.send(msg);
+		} catch (MessagingException e) {
+			throw new MessageSenderException(e);
+		}
 	}
 
 	public static void main(String[] args) {

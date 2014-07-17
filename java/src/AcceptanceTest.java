@@ -26,7 +26,7 @@ public class AcceptanceTest {
 
 		service = new BirthdayService() {			
 			@Override
-			protected void sendMessage(Message msg) throws MessagingException {
+			protected void sendMessage(Message msg) {
 				messagesSent.add(msg);
 			}
 		};
@@ -57,7 +57,6 @@ public class AcceptanceTest {
 	@Test
 	public void willNotSendEmailsWhenNobodysBirthday() throws Exception {		
 		service.sendGreetings(EMPLOYEE_DATA_FILE, new OurDate("2008/01/01"), "localhost", SMTP_PORT);
-		
 		assertEquals("what? messages?", 0, messagesSent.size());
 	}
 
