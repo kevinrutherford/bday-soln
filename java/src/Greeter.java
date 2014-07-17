@@ -1,13 +1,16 @@
 
-public class Greeter {
+public class Greeter implements EmployeeAction {
 
 	private Emailer messageSender;
+	private OurDate ourDate;
 
 	public Greeter(Emailer messageSender, OurDate ourDate) {
 		this.messageSender = messageSender;
+		this.ourDate = ourDate;
 	}
 
-	public void greet(OurDate ourDate, Employee employee) {
+	@Override
+	public void visit(Employee employee) {
 		String recipient = employee.getEmail();
 		if (employee.isBirthday(ourDate)) {
 			String body = "Happy Birthday, dear %NAME%!".replace("%NAME%", employee.getFirstName());
