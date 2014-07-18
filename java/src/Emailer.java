@@ -5,7 +5,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-
 public class Emailer {
 	private String smtpHost;
 	private int smtpPort;
@@ -16,13 +15,13 @@ public class Emailer {
 	}
 
 	public void sendMessage(String sender, String subject, String body, String recipient) {
-		// Create a mail session
-		java.util.Properties props = new java.util.Properties();
-		props.put("mail.smtp.host", smtpHost);
-		props.put("mail.smtp.port", "" + smtpPort);
-		Session session = Session.getDefaultInstance(props, null);
+		Session session = createSession();
+		Message msg = constructMessage(sender, subject, body, recipient, session);
+		sendMessage(msg);
+	}
 
-		// Construct the message
+	private Message constructMessage(String sender, String subject,
+			String body, String recipient, Session session) {
 		Message msg = new MimeMessage(session);
 		try {
 			msg.setFrom(new InternetAddress(sender));
@@ -32,7 +31,15 @@ public class Emailer {
 		} catch (MessagingException e) {
 			throw new MessageSenderException(e);
 		}
-		sendMessage(msg);
+		return msg;
+	}
+
+	private Session createSession() {
+		java.util.Properties props = new java.util.Properties();
+		props.put("mail.smtp.host", smtpHost);
+		props.put("mail.smtp.port", "" + smtpPort);
+		Session session = Session.getDefaultInstance(props, null);
+		return session;
 	}
 
 	// made protected for testing :-(
